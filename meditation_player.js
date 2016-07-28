@@ -2,6 +2,7 @@
 var ids = ["YQlyHbu0zz4", "QoitiIbdeaM"];
 var vid_times = ["60:00", "10:00"]; //10:00 is placeholder.
 var countdown_time = 3600;
+var start_counter = -1; //will be set at 0 when necessary things are initialized
 
 //The youtube part from tutorial: http://tutorialzine.com/2015/08/how-to-control-youtubes-video-player-with-javascript/
 var player;
@@ -28,7 +29,8 @@ function setSecondVideoTime() {
       var formattedTime = fromSecondsToFormattedTime(second_vid_duration);
       vid_times[1] = formattedTime;
       player.stopVideo();
-    }, 1000);
+      start_counter = 0;
+    }, 1000);               //pause is needed because Youtube only loads metadata when the video is played.
 }
 
 //http://stackoverflow.com/questions/3733227/javascript-seconds-to-minutes-and-seconds
@@ -45,12 +47,17 @@ function fromSecondsToFormattedTime(time){
 window.onload = function () {
     var display = document.querySelector('#time');
     document.querySelector('button').addEventListener('click', function () { 
-        var timer = new CountDownTimer(countdown_time);
-        var timeObj = CountDownTimer.parse(countdown_time);
-        format(timeObj.minutes, timeObj.seconds);
-        timer.onTick(format).onTick(playSongs);
-        timer.start(); 
-        console.log(vid_times);
+        if(start_counter == 0){
+            var timer = new CountDownTimer(countdown_time);
+            var timeObj = CountDownTimer.parse(countdown_time);
+            format(timeObj.minutes, timeObj.seconds);
+            timer.onTick(format).onTick(playSongs);
+            timer.start();
+            start_counter++;
+        }
+        else if (start_counter == -1){
+            alert("Youtube data is still loading, you clicked a bit too fast. Now it should be finished.");
+        }
     });
     
     function format(minutes, seconds) {
@@ -78,16 +85,22 @@ window.onload = function () {
 };
 
 function submitVideoIds(vid1, vid2){
-    ids = [vid1, vid2];
-    setSecondVideoTime();
-    update("updated_ids", "video_ids", ids);
+    if(start_counter == 0){
+        ids = [vid1, vid2];
+        setSecondVideoTime();
+        update("updated_ids", "video_ids", ids);
+    }
 }
 
 function changeCountDownTime(time){
-    vid_times[0] = fromSecondsToFormattedTime(time);
-    countdown_time = time;
-    update_var = fromSecondsToFormattedTime(time);
-    update("updated_time", "video_times", update_var);
+    if (start_counter == 0){
+        vid_times[0] = fromSecondsToFormattedTime(time);
+        countdown_time = time;
+        update_var = fromSecondsToFormattedTime(time);
+        update("updated_time", "video_times", update_var);
+        time_element = document.getElementById("time");
+        time_element.innerHTML = update_var;
+    }
 }
 
 function update(element_id, hook_element_id, update_var){
