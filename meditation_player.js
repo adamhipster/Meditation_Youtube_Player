@@ -61,7 +61,7 @@ function fromSecondsToFormattedTime(time) {
     function str_pad_left(string,pad,length) {
         return (new Array(length+1).join(pad)+string).slice(-length);
     }
-    var finalTime = str_pad_left(parsedTime.minutes,'0',2)+':'+str_pad_left(parsedTime.seconds,'0',2);
+    var finalTime = str_pad_left(parsedTime.minutes,' ',3)+':'+str_pad_left(parsedTime.seconds,'0',2);
     return finalTime;
 }
 
