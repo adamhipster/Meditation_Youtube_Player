@@ -53,6 +53,7 @@ function setSecondVideoTime() {
         player.stopVideo();
         start_counter = 0;
     }, 1000);               //pause is needed because Youtube only loads metadata when the video is played.
+    console.log(vid_times);
 }
 
 //http://stackoverflow.com/questions/3733227/javascript-seconds-to-minutes-and-seconds
@@ -61,7 +62,9 @@ function fromSecondsToFormattedTime(time) {
     function str_pad_left(string,pad,length) {
         return (new Array(length+1).join(pad)+string).slice(-length);
     }
-    var finalTime = str_pad_left(parsedTime.minutes,' ',3)+':'+str_pad_left(parsedTime.seconds,'0',2);
+    var finalTime = str_pad_left(parsedTime.minutes,'0',3)+':'+str_pad_left(parsedTime.seconds,'0',2);
+    console.log("FinalTime: " + finalTime);
+    var finalTime = finalTime[0]=="0"?finalTime.substr(1,finalTime.length):finalTime; //trim the 0 away that was too much, e.g. 005:24.
     return finalTime;
 }
 
@@ -130,6 +133,7 @@ function changeCountDownTime(time) {
         update("updated_time", "video_times", update_var);
         time_element = document.getElementById("time");
         time_element.innerHTML = update_var;
+        console.log(vid_times);
     }
 }
 
