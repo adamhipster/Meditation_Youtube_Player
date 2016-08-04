@@ -47,7 +47,7 @@ function setSecondVideoTime() {
     player.cueVideoById(ids[1]);
     player.playVideo();
     setTimeout(function () {
-        var second_vid_duration = player.getDuration();
+        var second_vid_duration = player.getDuration(); //TO DO: deleted Math.Floor. It seems to work but add it again to be sure.
         console.log("second_vid_duration: " + second_vid_duration);
         var formattedTime = fromSecondsToFormattedTime(second_vid_duration);
         vid_times[1] = formattedTime;
