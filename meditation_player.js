@@ -39,7 +39,7 @@ function checkIfVideoPlayable(vid) {
         player.stopVideo();
         if(unplayable_video) { alert("video " + vid + " is unplayable. Reset the web page and choose another video")};
         console.log("checkIfVideoPlayable: " + unplayable_video);
-    }, 650); 
+    }, 950); 
 }
 
 function setSecondVideoTime() {
@@ -47,7 +47,8 @@ function setSecondVideoTime() {
     player.cueVideoById(ids[1]);
     player.playVideo();
     setTimeout(function () {
-        var second_vid_duration = Math.floor (player.getDuration() );
+        var second_vid_duration = player.getDuration();
+        console.log("second_vid_duration: " + second_vid_duration);
         var formattedTime = fromSecondsToFormattedTime(second_vid_duration);
         vid_times[1] = formattedTime;
         player.stopVideo();
@@ -110,18 +111,19 @@ window.onload = function () {
 };
 
 function submitVideoIds(vid1, vid2) {
+    //TO DO: check if video is playable functionality is broken. I have to manually test that for now.
     if(start_counter == 0){
         ids = [vid1, vid2];
-        setTimeout(function () {
-            checkIfVideoPlayable(vid1);
-            console.log("after checkIfVideoPlayable: " + unplayable_video + " " + vid1);
-        }, 700);
-        setTimeout(function () {
-            checkIfVideoPlayable(vid2);
-            console.log("after checkIfVideoPlayable: " + unplayable_video + " " + vid2);
+        // setTimeout(function () {
+        //     checkIfVideoPlayable(vid1);
+        //     console.log("after checkIfVideoPlayable: " + unplayable_video + " " + vid1);
+        // }, 1000);
+        // setTimeout(function () {
+        //     //checkIfVideoPlayable(vid2);
+        //     console.log("after checkIfVideoPlayable: " + unplayable_video + " " + vid2);
             setSecondVideoTime();
-            update("updated_ids", "video_ids", ids);
-        }, 1400);
+        //     update("updated_ids", "video_ids", ids);
+        // }, 1000);
     }
 }
 
