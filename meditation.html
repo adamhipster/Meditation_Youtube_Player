@@ -1,0 +1,53 @@
+<html>
+<head>
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script src="countdowntimer.js"></script>
+    <script src="meditation_player.js"></script>
+</head>
+<body>
+    <button>Start Count Down</button>
+    <div>Meditation stops in <span id="time">60:00</span> minutes.
+    <br />
+    <br />
+    Currently the ids and times do not get checked for input errors.
+    <br />
+    Already has 2 preloaded songs @ 60:00 and @ ending of meditation. The 2nd song starts at the moment the countdown timer becomes the duration of the song (e.g., 5:27).
+    <br />
+    The countdown can't be stopped, unless you reload the whole site. Once the countdown has been started, you cannot update the videos and times anymore.
+    
+    <br />
+    <br />
+    If you want to change songs, here's a little control panel. You need to insert the YouTube ids (after the v= part in the url). Only afterwards should you start the countdown. And if things get buggy due to misclicks on some buttons, then refreshing the page always helps.
+    </div>
+    
+    <br />
+    <strong>Control Panel</strong>
+    <br />
+    <input type="text" id="vid1" value="beginning_video" />
+    <input type="text" id="vid2" value="end_video" />
+    <button id="video_ids" onclick="submitVideoIds(document.getElementById('vid1').value, document.getElementById('vid2').value)">submit video ids</button>
+    <br />
+    <input type="text" id="meditation_time" value="3600"> <emph>enter time in seconds.</emph>
+    <button id="video_times" onclick="changeCountDownTime(document.getElementById('meditation_time').value)">submit time</button>
+
+    <br />
+    <div id="video-placeholder"></div>
+    <br />
+    Defaults:
+    <ul>
+        <li>YQlyHbu0zz4 --  Antoine Dufour - These Moments</li> 
+        <li>QoitiIbdeaM --  Owl City - Fireflies (remix by Said The Sky)</li> 
+    </ul>
+    <br />
+    Other cool songs (listed as youtube ids): 
+    <ul>
+        <li>F9-4N-3wv6I -- Vexento and Lucas King - Peace ("epic piano")</li>
+        <li>nLHfIvD0bJE -- Hollywood Principle - Breathing Underwater Remix by Ether ("Breathing underwater")</li>
+        <li>mDlQ4QYsVhQ -- Anima - You Are Truth (epic soundscape)</li>
+        <li>BXckWJeWrP8 -- Dreamlag - Firefly</li>
+        <li>044KzpsVjRY -- Miro - Promise (ft Satellite Empire)</li>
+        <li>Ugq6sahpcAE -- Martin Garrix & Bebe Rexha - In The Name Of Love</li>
+        <li>Nj_7R4e9ozw -- MitiS & MaHi - Beautiful Life</li>
+    </ul>
+</body>
+</html>
