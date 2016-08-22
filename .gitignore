@@ -10,7 +10,7 @@ settings.py
 .DS_Store
 local_settings.py
 *.db
-*.sqlite
+*.sqlite3
 _build
 MANIFEST
 build
@@ -19,3 +19,4 @@ dist/
 .cache/
 .coverage
 .eggs/
+migrations/
