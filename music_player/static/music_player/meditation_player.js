@@ -57,12 +57,14 @@ function setSecondVideoTime() {
     console.log(vid_times);
 }
 
+function str_pad_left(string,pad,length) {
+    return (new Array(length+1).join(pad)+string).slice(-length);
+}
+
 //http://stackoverflow.com/questions/3733227/javascript-seconds-to-minutes-and-seconds
 function fromSecondsToFormattedTime(time) {
     var parsedTime = CountDownTimer.parse(time);
-    function str_pad_left(string,pad,length) {
-        return (new Array(length+1).join(pad)+string).slice(-length);
-    }
+    
     var finalTime = str_pad_left(parsedTime.minutes,'0',3)+':'+str_pad_left(parsedTime.seconds,'0',2);
     console.log("FinalTime: " + finalTime);
     var finalTime = finalTime[0]=="0"?finalTime.substr(1,finalTime.length):finalTime; //trim the 0 away that was too much, e.g. 005:24.
@@ -71,13 +73,21 @@ function fromSecondsToFormattedTime(time) {
 
 //Timer part from: http://stackoverflow.com/questions/20618355/the-simplest-possible-javascript-countdown-timer
 window.onload = function () {
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+                // Only send the token to relative URLs i.e. locally.
+                xhr.setRequestHeader("X-CSRFToken", Cookies.get('csrftoken'));
+            }
+        }
+    });
     var display = document.querySelector('#time');
     document.querySelector('button').addEventListener('click', function () { 
         if(start_counter == 0){
             var timer = new CountDownTimer(countdown_time);
             var timeObj = CountDownTimer.parse(countdown_time);
             format(timeObj.minutes, timeObj.seconds);
-            timer.onTick(format).onTick(playSongs);
+            timer.onTick(format).onTick(playSongs).onTick(storeSession);
             timer.start();
             start_counter++;
         }
@@ -91,8 +101,7 @@ window.onload = function () {
         seconds = seconds < 10 ? "0" + seconds : seconds;
         display.textContent = minutes + ':' + seconds;
     }
-    
-// own functions start from here
+
     function playSongs() {
         if(display.innerHTML == vid_times[0]){
             startSong(ids[0]);
@@ -108,24 +117,30 @@ window.onload = function () {
         player.playVideo();
     }
 
-};
-
-function submitVideoIds(vid1, vid2) {
-    //TO DO: check if video is playable functionality is broken. I have to manually test that for now.
-    if(start_counter == 0){
-        ids = [vid1, vid2];
-        // setTimeout(function () {
-        //     checkIfVideoPlayable(vid1);
-        //     console.log("after checkIfVideoPlayable: " + unplayable_video + " " + vid1);
-        // }, 1000);
-        // setTimeout(function () {
-        //     //checkIfVideoPlayable(vid2);
-        //     console.log("after checkIfVideoPlayable: " + unplayable_video + " " + vid2);
-            setSecondVideoTime();
-        //     update("updated_ids", "video_ids", ids);
-        // }, 1000);
+    function storeSession() {
+        //see: http://coreymaynard.com/blog/performing-ajax-post-requests-in-django/ 
+        if(display.innerHTML == "00:00" && countdown_time >= 1)
+        {
+            var dt = new Date();
+            var data = {
+                'duration': countdown_time, 
+                'time': str_pad_left(dt.getHours(),'0',2) + ':' + str_pad_left(dt.getMinutes(),'0',2), 
+                'date': dt.getFullYear() + '-' + (dt.getMonth() + 1) + '-' + dt.getDate() , 
+                'songs': [ids[0], ids[1]]
+            };
+            $.ajax
+            ({
+                "type": "POST",
+                "dataType": "json",
+                "url": "/",
+                "data": data,
+            }); 
+        }
     }
-}
+
+}; //end onload
+
+//HTML TRIGGERS
 
 function changeCountDownTime(time) {
     if (start_counter == 0){
@@ -149,4 +164,25 @@ function update(element_id, hook_element_id, update_var) {
     var found_div = document.getElementById(element_id);
     parent_node.insertBefore(div, hook_element);
     if(found_div != null){ parent_node.removeChild(found_div); }
+}
+
+
+
+//UNUSED / BACKUP
+
+function submitVideoIds(vid1, vid2) {
+    //TO DO: check if video is playable functionality is broken. I have to manually test that for now.
+    if(start_counter == 0){
+        ids = [vid1, vid2];
+        // setTimeout(function () {
+        //     checkIfVideoPlayable(vid1);
+        //     console.log("after checkIfVideoPlayable: " + unplayable_video + " " + vid1);
+        // }, 1000);
+        // setTimeout(function () {
+        //     //checkIfVideoPlayable(vid2);
+        //     console.log("after checkIfVideoPlayable: " + unplayable_video + " " + vid2);
+            setSecondVideoTime();
+        //     update("updated_ids", "video_ids", ids);
+        // }, 1000);
+    }
 }
