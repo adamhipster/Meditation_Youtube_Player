@@ -20,5 +20,8 @@ from music_player import views as music_player_views
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', music_player_views.meditation, name='meditation'),
+
+    #URLs for pulse app
+    url(r'^pulse/$', music_player_views.pulse, name='pulse'),
+   	url(r'^pulse/begin$', music_player_views.pulse_begin, name='pulse_begin'), 
 ]
- 

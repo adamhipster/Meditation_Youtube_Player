@@ -14,3 +14,20 @@ def meditation(request):
 		Song.objects.create(session = ms, song = songs[1])		
 
 	return render(request, "meditation.html", {})
+
+def pulse(request):
+	return render(request, "splash.html", {})
+
+def pulse_begin(request):
+	return render(request, "index.html", {})
+
+
+
+# Websockets
+# @sockets.route('/echo')
+# def echo_socket(ws):
+# 	while True:
+# 		message = json.loads(ws.receive())
+# 		signals = model.parse_RGB(message)
+		
+# 		ws.send(signals)
