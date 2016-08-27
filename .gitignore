@@ -20,3 +20,4 @@ dist/
 .coverage
 .eggs/
 migrations/
+pulse_copy/
