@@ -4,13 +4,17 @@ from django.contrib import admin
 from pulse.models import HeartrateSession, MeanHeartrate
 
 class HeartrateSessionAdmin(admin.ModelAdmin):
-	list_display = ['date_time', 'mean_heartrates' ]
+	list_display = ['date_time', 'id', 'mean_heartrates', 'meditation_session']
 
 	class Meta:
 		model = HeartrateSession
 
 	def mean_heartrates(self, obj):
-		res = HeartrateSession.objects.get(id=obj.id).meanheartrate_set.values()
+		vals = HeartrateSession.objects.get(id=obj.id).meanheartrate_set.values()
+		res = ''
+		for val in vals:
+			res = res + str(val['heartrate']) + ' '
+		#return vals #for debug
 		return res
 
 admin.site.register(HeartrateSession, HeartrateSessionAdmin)

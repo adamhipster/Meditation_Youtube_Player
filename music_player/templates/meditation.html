@@ -7,10 +7,13 @@
     <script src="{% static 'meditation_player.js' %}"></script>
     <script   src="https://code.jquery.com/jquery-3.1.0.min.js"   integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="   crossorigin="anonymous"></script>
 
+    <link rel="stylesheet" type="text/css" href="{% static 'meditation_player.css' %}">
+
 </head>
 <body>
     <button id="countdown_button">Start Count Down</button>
-    <button id="favorites_button">Display list of favorite songs</button>
+    <button id="favorites_button" onclick="toggleDisplay('#favorites_button', '#favorites_text')">Display list of favorite songs</button>
+    <button id="enable_camera_button" onclick="toggleIframe('#enable_camera_button')">Display heartmeter</button>
     <div>Meditation stops in <span id="time">60:00</span> minutes.
     </div>
 
@@ -19,16 +22,17 @@
     <br />
     <input type="text" id="vid1" value="beginning_video" />
     <input type="text" id="vid2" value="end_video" />
-    <button id="video_ids" onclick="submitVideoIds(document.getElementById('vid1').value, document.getElementById('vid2').value)">submit video ids</button>
+    <button id="video_ids" onclick="submitVideoIds(document.getElementById('vid1').value, document.getElementById('vid2').value)">submit youtube links</button>
     <br />
     <input type="text" id="meditation_time" value="3600"> <emph>enter time in seconds.</emph>
     <button id="video_times" onclick="changeCountDownTime(document.getElementById('meditation_time').value)">submit time</button>
 
     <br />
-    <div id="video-placeholder"></div>
+    <div id="video_placeholder"></div>
     <br />
 
-    <div id="favorites_text">
+
+    <div id="favorites_text" style="display:none">
         Defaults:
         <ul>
             <li>YQlyHbu0zz4 --  Antoine Dufour - These Moments</li> 

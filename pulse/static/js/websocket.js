@@ -6,6 +6,8 @@ dataSocket.onopen = function(){
 
 dataSocket.onmessage =  function(e){
 	var data = JSON.parse(e.data);
+	console.log("parsing onmessage event: ");
+	console.log(e);
 
 	if (data.id === "ICA"){
 		camera.cardiac(data.array, data.bufferWindow);
@@ -14,6 +16,8 @@ dataSocket.onmessage =  function(e){
 }
 
 function sendData(data){
+	console.log("function send data call");
+	console.log(data);
 	dataSocket.send(data);
 }
 

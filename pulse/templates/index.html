@@ -17,21 +17,11 @@
 
     <div id="buttonBar" class="hide button">
         <button id="end_camera" name="end_camera" class="button">Pause Camera</button>
-        <button id="blurToggle" name="blurToggle" class="button">Focus Video</button>
-        <button id="minToggle" name="minToggle" class="button">Minimize Video</button>
+        <button id="facetracking_agreement" name="facetracking_agreement" class="button">Initializing camera settings</button>
     </div>
   </div>
 
   <div id="heartbeat"></div>
-
-  <div id="graphs">
-    <div id="rawDataGraphContainer">
-      <div id="rawDataGraph" class="graph"></div>
-      <p id="rawDataLabel">Change in brightness (raw video data)</p>
-    </div>
-    <div id="confidenceGraph" class="graph"></div>
-
-  </div>
 
   <script src="/static/js/main.js"></script>
   <script type="text/javascript">
@@ -39,25 +29,10 @@
     // jQuery provides functionality for animation 
     // and basic UI
 
-    $( "#minToggle" ).click(function() {
-      if ($("#minToggle").html() == "Minimize Video"){
-        minimizeVideo();
-      } else {
-        maximizeVideo();
-      }
-    });
 
-    $( "#blurToggle" ).click(function() {
-      $( "#canvas" ).toggleClass("blur");
-      $( "#border").toggleClass("border");
-
-      var html = $("#blurToggle").html()
-
-      if ($("#blurToggle").html() == "Fade Video"){
-        $("#blurToggle").html("Focus Video");
-      } else {
-        $("#blurToggle").html("Fade Video");
-      }
+    document.getElementById("facetracking_agreement").disabled = true;
+    $( "#facetracking_agreement" ).click(function() {
+      camera.agree();
     });
 
     $("#end_camera").click(function(){

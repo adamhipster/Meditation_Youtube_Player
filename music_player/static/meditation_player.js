@@ -4,11 +4,12 @@ var vid_times = ["60:00", "10:00"]; //10:00 is placeholder.
 var countdown_time = 3600;
 var start_counter = -1; //will be set at 0 when necessary things are initialized
 var unplayable_video;
+var is_hearttracking = false;
 
 //The youtube part from tutorial: http://tutorialzine.com/2015/08/how-to-control-youtubes-video-player-with-javascript/
 var player;
 function onYouTubeIframeAPIReady() {
-    player = new YT.Player('video-placeholder', {
+    player = new YT.Player('video_placeholder', {
         width: 400,
         height: 200,
         events: {
@@ -132,7 +133,8 @@ window.onload = function () {
                 'duration': countdown_time, 
                 'time': str_pad_left(dt.getHours(),'0',2) + ':' + str_pad_left(dt.getMinutes(),'0',2), 
                 'date': dt.getFullYear() + '-' + (dt.getMonth() + 1) + '-' + dt.getDate() , 
-                'songs': [ids[0], ids[1]]
+                'songs': [ids[0], ids[1]],
+                'is_hearttracking': is_hearttracking,
             };
             $.ajax
             ({
@@ -143,26 +145,6 @@ window.onload = function () {
             }); 
         }
     }
-
-    //GENERAL UI THINGS ON HTML PAGE
-    document.querySelector("#favorites_button").addEventListener('click', function() {
-        var favoritesText = document.querySelector("#favorites_text");
-        var display;
-        try{
-            display = favoritesText.style.display;
-        }
-        catch(err){
-            favoritesText.style.display = '';
-            display = favoritesText.style.display;
-        }
-        if (display != 'none'){
-            favoritesText.style.display = 'none';
-        }
-        else {
-            favoritesText.style.display = 'block';
-        }
-    }, false);
-
 }; //end onload
 
 //HTML TRIGGERS
@@ -208,3 +190,80 @@ function ifURLExtractId(vid) {
     }
     return vid;
 }
+
+
+//HTML UI
+function toggleDisplay(buttonSelector, textSelector) {
+    var text = document.querySelector(textSelector);
+    var display;
+
+    function tg(display, text){
+        if (display != 'none'){
+            text.style.display = 'none';
+        }
+        else {
+            text.style.display = 'block';
+        }
+        return text;
+    }
+
+    try{
+        display = text.style.display;
+        text = tg(display, text);
+    }
+    catch(err){
+        console.log("toggledisplay catch: " + err);
+        text.style.display = '';
+        display = text.style.display;
+        tg(display, text);
+    }
+
+}
+
+function toggleIframe(buttonSelector) {
+    function HeartrateEventListeners(){
+        var doc = document.getElementById(id).contentWindow.document;
+        doc.getElementById("facetracking_agreement").addEventListener("click", function(){
+            is_hearttracking = true;
+            console.log("click facetracking_agreement! Heartracking is " + is_hearttracking);
+        });
+        doc.getElementById("end_camera").addEventListener("click", function(){
+            is_hearttracking = false;
+            console.log("click end_camera! Heartracking is " + is_hearttracking);
+        });
+
+    }
+    var wrapper= document.createElement('div');
+    wrapper.innerHTML= "<iframe id='camera_iframe' src='http://localhost:8000/pulse/begin'></iframe>";
+    var iframe = wrapper.firstChild;
+    var id = iframe.getAttribute("id");
+    var domIframe = document.getElementById(id); 
+    if(!domIframe){
+        var vidHolder = document.getElementById("video_placeholder");
+        var parentVid = vidHolder.parentNode;
+        var index = Array.prototype.indexOf.call(parentVid.children, vidHolder);
+        parentVid.insertBefore(iframe, parentVid.children[index+1]);
+        setTimeout(HeartrateEventListeners, 1000);
+    }
+    //document.getElementById("camera_iframe").contentWindow.document.getElementById("facetracking_agreement")
+}
+
+
+// //generic function (not used)
+// function toggleIframe(buttonSelector, iframeHTML ) {
+//     var wrapper= document.createElement('div');
+//     wrapper.innerHTML= iframeHTML;
+//     var iframe = wrapper.firstChild;
+//     var id = iframe.getAttribute("id");
+//     var domIframe = document.getElementById(id); 
+//     if(!domIframe){
+//         var vidHolder = document.getElementById("video_placeholder");
+//         var parentVid = vidHolder.parentNode;
+//         var index = Array.prototype.indexOf.call(parentVid.children, vidHolder);
+//         parentVid.insertBefore(iframe, parentVid.children[index+1]);
+//     }
+
+// }
+
+
+

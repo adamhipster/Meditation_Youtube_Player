@@ -115,6 +115,8 @@ headtrackr.Tracker = function(params) {
 	var headDiagonal = [];
 	
 	this.status = "";
+	//added by mettamage
+	this.userAgreesWithFaceTrack = false;
 	
 	var statusEvent = document.createEvent("Event");
 	statusEvent.initEvent("headtrackrStatus", true, true);

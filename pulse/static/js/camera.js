@@ -14,16 +14,17 @@ var camera = (function(){
   var blue = [];
   var pause = false;
   var spectrum;
-  var confidenceGraph, x, y, line, xAxis;
+  var h, x, y, line, xAxis;
   var heartrateAverage = [];
   var heartrateStored = [];
   var circle, circleSVG, r;
   var toggle = 1;
   var hrAv = 65;
-  var blur = false;
   var graphing = false;
   const STORED_HEARTRATES_AMNT = 60;
   var newSession = true;
+  var faceFound = false;
+  var userAgreesWithFaceTrack = false;
 
   function initVideoStream(){
     video = document.createElement("video");
@@ -75,23 +76,6 @@ var camera = (function(){
     var button = document.getElementById("end_camera");
     button.style.display = "block";
 
-    // ** displays raw data (difference in pixel averages over time sampled 15 times a second) ** 
-    rawDataGraph = new Rickshaw.Graph( {
-      element: document.getElementById("rawDataGraph"),
-      width: 600,
-      height: 120,
-      renderer: "line",
-      min: -2,
-      interpolation: "basis",
-      series: new Rickshaw.Series.FixedDuration([{ name: "one" }], undefined, {
-        timeInterval: 1000/fps,
-        maxDataPoints: 300,
-        timeBase: new Date().getTime() / 1000
-      })
-    });
-
-
-
     startCapture();
   };
 
@@ -101,7 +85,8 @@ var camera = (function(){
     htracker.start();
 
     // ** for each facetracking event received draw rectangle around tracked face on canvas ** 
-    document.addEventListener("facetrackingEvent", greenRect)
+    document.addEventListener("facetrackingEvent", greenRect);
+    document.addEventListener("headtrackrStatus", faceTrackingStatus); //for facetrackingagreement
   };
 
   function greenRect(event) {
@@ -151,15 +136,6 @@ var camera = (function(){
         greenSum = forehead.data[i+1] + greenSum;
         blueSum = forehead.data[i+2] + blueSum;
         
-        // ** blurs video after head tracking **
-        if (blur == false){
-          var border = document.getElementById("border");
-          canvas.className = "video blur";
-          border.className = "border";
-          blur = true;
-          minimizeVideo();
-        }
-
         // // ** TOGGLE FOR GREEN CHANNEL ONLY **
         // greenSum = forehead.data[i+1] + greenSum;
       };
@@ -202,15 +178,6 @@ var camera = (function(){
         blue.shift();
       }
       
-      graphData = {one: normalize(green)[green.length-1]}
-      rawDataGraph.series.addData(graphData);
-      rawDataGraph.update();
-
-      if (graphing === false){
-        var rickshawAxis = document.getElementById("rawDataLabel");
-        rickshawAxis.style.display = "block";
-        graphing = true;
-      }
 
       // ** for debugging: puts green video image on screen **
       // overlayContext.putImageData(forehead, sx, sy);
@@ -251,7 +218,6 @@ var camera = (function(){
     // graph.series.addData(graphData);
     // graph.render();
 
-    showConfidenceGraph(freqs, 600, 100);
     heartbeatCircle(heartrate);
     
     // ** create an average of the last five heartrate 
@@ -306,39 +272,7 @@ var camera = (function(){
     }
   }
 
-  function showConfidenceGraph(data, width, height){
-    // **  x == filteredFreqBin, y == normalizedFreqs ** 
-    var max = _.max(data.normalizedFreqs);
-    data.filteredFreqBin = _.map(data.filteredFreqBin, function(num){return num * 60});
-    var data = _.zip(data.normalizedFreqs, data.filteredFreqBin);
-    
-    if (confidenceGraph){
-      y = d3.scale.linear().domain([ 0, max]).range([height, 0]);
-      confidenceGraph.select("path").transition().attr("d", line(data)).attr("class", "line").ease("linear").duration(750);
-    } else {
-      x = d3.scale.linear().domain([48, 180]).range([0, width - 20]);
-      y = d3.scale.linear().domain([0, max]).range([height, 0]);
-
-      confidenceGraph = d3.select("#confidenceGraph").append("svg").attr("width", width).attr("height", 150);
-      
-      xAxis = d3.svg.axis().scale(x).tickSize(-height).tickSubdivide(true);
-
-      line = d3.svg.line()
-                    .x(function(d) { return x(+d[1]); })
-                    .y(function(d) { return y(+d[0]); });
-      
-      confidenceGraph.append("svg:path").attr("d", line(data)).attr("class", "line");
-      confidenceGraph.append("g").attr("class", "x axis").attr("transform", "translate(0," + height + ")").call(xAxis);
-      confidenceGraph.append("text").attr("x", 235).attr("y", height + 40).style("text-anchor", "end").text("Confidence in frequency in BPM").attr("font-size", "12pt").attr("fill", "steelblue");
-    }
-  }
-
-  function clearConfidenceGraph(){
-    var confidenceClear = document.getElementById("confidenceGraph");
-    while (confidenceClear.firstChild){
-      confidenceClear.removeChild(confidenceClear.firstChild);
-    }
-  }
+  //deleted var confidenceGraph, showConfidenceGraph() and clearConfidenceGraph()
 
   function startCapture(){
     video.play();
@@ -349,8 +283,6 @@ var camera = (function(){
       red = [];
       green = [];
       blue = []; 
-      confidenceGraph = null;
-      clearConfidenceGraph();
     }
     
     // ** set the framerate and draw the video the canvas at the desired fps ** 
@@ -366,7 +298,7 @@ var camera = (function(){
       //   sendData(JSON.stringify({"array": green, "bufferWindow": green.length}));
       // }
       // ** FOR RGB CHANNELS & ICA **
-      if (sendingData){
+      if (sendingData && userAgreesWithFaceTrack){
         sendData(JSON.stringify({"array": [red, green, blue], "bufferWindow": green.length}));
       }
 
@@ -376,23 +308,21 @@ var camera = (function(){
     // to an average of the last five heartrate measurements **
     heartbeatTimer = setInterval(function(){
       var duration = Math.round(((60/hrAv) * 1000)/4);
-      if (confidenceGraph){
-         if (toggle % 2 == 0){
-            circleSVG.select("circle")
-                   .transition()
-                   .attr("r", r)
-                   .duration(duration);
-          } else {
-            circleSVG.select("circle")
-                   .transition()
-                   .attr("r", r + 15)
-                   .duration(duration);
-          }
-          if (toggle == 10){
-            toggle = 0;
-          }
-          toggle++;
+      if (toggle % 2 == 0){
+          circleSVG.select("circle")
+                 .transition()
+                 .attr("r", r)
+                 .duration(duration);
+        } else {
+          circleSVG.select("circle")
+                 .transition()
+                 .attr("r", r + 15)
+                 .duration(duration);
         }
+        if (toggle == 10){
+          toggle = 0;
+        }
+        toggle++;
     }, Math.round(((60/hrAv) * 1000)/2));
 
 
@@ -414,7 +344,35 @@ var camera = (function(){
     document.removeEventListener("facetrackingEvent", greenRect);
     htracker.stop();
 
+    //added by mettamage
+    faceFound = false;
+    resetFacetrackingAgreement();
   };
+
+  function faceTrackingStatus(headtrackrEvent) {
+    if(headtrackrEvent.status == "found"){
+      faceFound = true;
+      var text = "Click Here To Agree With Camera Settings";
+      $("#facetracking_agreement").html(text);
+      document.getElementById("facetracking_agreement").disabled = false;
+    }
+  }
+
+  function agreeWithFacetracking(){
+    if(faceFound){
+      userAgreesWithFaceTrack = true;
+      // console.log("agreement is set!");
+      var text = "Agreement Is Set!";
+      $("#facetracking_agreement").html(text); 
+    }
+  };
+
+  function resetFacetrackingAgreement(){
+    userAgreesWithFaceTrack = false;
+    var text = "Initializing camera settings";
+    $("#facetracking_agreement").html(text);
+    document.getElementById("facetracking_agreement").disabled = true;
+  }
 
   var errorCallback = function(error){
     console.log("something is wrong with the webcam!", error);
@@ -427,6 +385,7 @@ var camera = (function(){
     start: startCapture,
     pause: pauseCapture,
     cardiac: cardiac,
+    agree: agreeWithFacetracking,
   }
 
 })();

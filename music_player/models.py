@@ -6,6 +6,8 @@ class MeditationSession(models.Model):
 	time = models.TimeField()
 	duration = models.IntegerField()
 
+	def __str__(self):
+		return "session " + str(self.id) + " @ " + str(self.time) + str(self.date)
 
 
 class Song(models.Model):
