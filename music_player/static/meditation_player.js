@@ -37,7 +37,7 @@ function checkIfVideoPlayable(vid) {
     player.playVideo();
     setTimeout(function () {
         player.stopVideo();
-        if(unplayable_video) { alert("video " + vid + " is unplayable. Reset the web page and choose another video")};
+        if(unplayable_video) { alert("video " + vid + " is unplayable. Reset the web page and choose another video")}
         console.log("checkIfVideoPlayable: " + unplayable_video);
     }, 950); 
 }
@@ -52,7 +52,13 @@ function setSecondVideoTime() {
         var formattedTime = fromSecondsToFormattedTime(second_vid_duration);
         vid_times[1] = formattedTime;
         player.stopVideo();
-        start_counter = 0;
+        if(vid_times[1] == "00:00"){
+            console.log("ERROR -- Video time of 2nd video: " + vid_times[1]);
+            alert("Something went wrong loading the song time of the 2nd video. Please reload the page.");
+        }
+        else{
+            start_counter = 0;
+        }
     }, 1000);               //pause is needed because Youtube only loads metadata when the video is played.
     console.log(vid_times);
 }
@@ -82,7 +88,7 @@ window.onload = function () {
         }
     });
     var display = document.querySelector('#time');
-    document.querySelector('button').addEventListener('click', function () { 
+    document.querySelector('#countdown_button').addEventListener('click', function () { 
         if(start_counter == 0){
             var timer = new CountDownTimer(countdown_time);
             var timeObj = CountDownTimer.parse(countdown_time);
@@ -138,6 +144,25 @@ window.onload = function () {
         }
     }
 
+    //GENERAL UI THINGS ON HTML PAGE
+    document.querySelector("#favorites_button").addEventListener('click', function() {
+        var favoritesText = document.querySelector("#favorites_text");
+        var display;
+        try{
+            display = favoritesText.style.display;
+        }
+        catch(err){
+            favoritesText.style.display = '';
+            display = favoritesText.style.display;
+        }
+        if (display != 'none'){
+            favoritesText.style.display = 'none';
+        }
+        else {
+            favoritesText.style.display = 'block';
+        }
+    }, false);
+
 }; //end onload
 
 //HTML TRIGGERS
@@ -166,23 +191,20 @@ function update(element_id, hook_element_id, update_var) {
     if(found_div != null){ parent_node.removeChild(found_div); }
 }
 
-
-
-//UNUSED / BACKUP
-
 function submitVideoIds(vid1, vid2) {
-    //TO DO: check if video is playable functionality is broken. I have to manually test that for now.
     if(start_counter == 0){
+        vid1 = ifURLExtractId(vid1);
+        vid2 = ifURLExtractId(vid2);
         ids = [vid1, vid2];
-        // setTimeout(function () {
-        //     checkIfVideoPlayable(vid1);
-        //     console.log("after checkIfVideoPlayable: " + unplayable_video + " " + vid1);
-        // }, 1000);
-        // setTimeout(function () {
-        //     //checkIfVideoPlayable(vid2);
-        //     console.log("after checkIfVideoPlayable: " + unplayable_video + " " + vid2);
-            setSecondVideoTime();
-        //     update("updated_ids", "video_ids", ids);
-        // }, 1000);
+        setSecondVideoTime();
     }
+}
+
+function ifURLExtractId(vid) {
+    if(vid.indexOf("youtube") > -1){
+        var pos = vid.indexOf("v=");
+        id = vid.slice(pos+2, vid.indexOf("&"));
+        vid = id;
+    }
+    return vid;
 }

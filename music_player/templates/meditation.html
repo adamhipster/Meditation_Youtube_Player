@@ -1,0 +1,65 @@
+<html>
+<head>
+    {% load static %}
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.1.2/js.cookie.min.js"></script>
+    <script src="{% static 'countdowntimer.js' %}"></script>
+    <script src="{% static 'meditation_player.js' %}"></script>
+    <script   src="https://code.jquery.com/jquery-3.1.0.min.js"   integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="   crossorigin="anonymous"></script>
+
+</head>
+<body>
+    <button id="countdown_button">Start Count Down</button>
+    <button id="favorites_button">Display list of favorite songs</button>
+    <div>Meditation stops in <span id="time">60:00</span> minutes.
+    </div>
+
+    <br />
+    <strong>Control Panel</strong>
+    <br />
+    <input type="text" id="vid1" value="beginning_video" />
+    <input type="text" id="vid2" value="end_video" />
+    <button id="video_ids" onclick="submitVideoIds(document.getElementById('vid1').value, document.getElementById('vid2').value)">submit video ids</button>
+    <br />
+    <input type="text" id="meditation_time" value="3600"> <emph>enter time in seconds.</emph>
+    <button id="video_times" onclick="changeCountDownTime(document.getElementById('meditation_time').value)">submit time</button>
+
+    <br />
+    <div id="video-placeholder"></div>
+    <br />
+
+    <div id="favorites_text">
+        Defaults:
+        <ul>
+            <li>YQlyHbu0zz4 --  Antoine Dufour - These Moments</li> 
+            <li>QoitiIbdeaM --  Owl City - Fireflies (remix by Said The Sky)</li> 
+        </ul>
+        <br />
+        Other cool songs (listed as youtube ids): 
+        <ul>
+            <li>F9-4N-3wv6I -- Vexento and Lucas King - Peace ("epic piano")</li>
+            <li>nLHfIvD0bJE -- Hollywood Principle - Breathing Underwater Remix by Ether ("Breathing underwater")</li>
+            <li>mDlQ4QYsVhQ -- Anima - You Are Truth (epic soundscape)</li>
+            <li>BXckWJeWrP8 -- Dreamlag - Firefly</li>
+            <li>044KzpsVjRY -- Miro - Promise (ft Satellite Empire)</li>
+            <li>Ugq6sahpcAE -- Martin Garrix & Bebe Rexha - In The Name Of Love</li>
+            <li>Nj_7R4e9ozw -- MitiS & MaHi - Beautiful Life</li>
+            <li>qUuvTpU0hWE -- CMA - Forever In My Heart (rustig maar damn superscherp als je er intens naar luistert!)</li>
+            <li>https://www.youtube.com/watch?v=TKchMvDsCVA</li>
+            <li>https://www.youtube.com/watch?v=YRrYClM0ly4 -- Carousel - lets go home (awesome arpeggio)</li>
+        </ul>
+    https://www.youtube.com/watch?v=InLrfyyVUtQ
+    https://www.youtube.com/watch?v=W0W1c_qH9sQ
+        <ul>
+
+            <li>W6Hy0G0R3AQ -- CMA - You're Not Alone</li>
+            <li>cSGa6uuTcMk -- CMA - So Far Away ft. Wonder</li>
+            <li>95bC9LbaoQQ -- Ziu x Nyanara - Unforgettable (echo stem na ong. 1 min.)</li>
+            <li>CrwHNSkzT3U -- Said The Sky - Book Of Us (ft. Mothica)</li>
+            <li>https://www.youtube.com/watch?v=JpdrO1ZY0QA -- Mendum feat. EDEN - Elysium (Miro Remix) "Leeet it buuuurn"</li>
+            <li>https://www.youtube.com/watch?v=vKKERJpFuvo -- Frozen Tides by Electus & Michael St Laurent (heerlijke piano die ik voorspelde)</li>
+        </ul>
+        <p>Try: Vqrj0Lr81WQ, GA9a2lrhdl0, 2Y4ETdepLjw</p>
+    </div>
+</body>
+</html>
