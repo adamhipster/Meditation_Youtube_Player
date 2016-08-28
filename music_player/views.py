@@ -15,10 +15,3 @@ def meditation(request):
 
 	return render(request, "meditation.html", {})
 
-def pulse(request):
-	return render(request, "splash.html", {})
-
-def pulse_begin(request):
-	return render(request, "index.html", {})
-
-

@@ -16,11 +16,14 @@ var camera = (function(){
   var spectrum;
   var confidenceGraph, x, y, line, xAxis;
   var heartrateAverage = [];
+  var heartrateStored = [];
   var circle, circleSVG, r;
   var toggle = 1;
   var hrAv = 65;
   var blur = false;
   var graphing = false;
+  const STORED_HEARTRATES_AMNT = 60;
+  var newSession = true;
 
   function initVideoStream(){
     video = document.createElement("video");
@@ -253,15 +256,27 @@ var camera = (function(){
     
     // ** create an average of the last five heartrate 
     // measurements for the pulsing circle ** 
-    if (heartrateAverage.length < 3){
-        heartrateAverage.push(heartrate);
-        hrAV = heartrate;
+    if (heartrateAverage.length < 4){
+      heartrateAverage.push(heartrate);
+      hrAV = heartrate;
     } else {
       heartrateAverage.push(heartrate);
+      console.log(heartrateAverage);
       heartrateAverage.shift();
       hrAv = mean(heartrateAverage);
     }
-  };
+    if (heartrateStored.length < STORED_HEARTRATES_AMNT){
+      heartrateStored.push(heartrate);
+    }
+    if (heartrateStored.length == STORED_HEARTRATES_AMNT){
+      //by logging heartrate activity intermittently, I don't need to
+      //edit this program to send everything all at once.
+      var m = Number(mean(heartrateStored).toFixed(0));
+      sendToDatabase(m, newSession);
+      heartrateStored = [];
+      newSession = false;
+    }
+  }
 
   function heartbeatCircle(heartrate){
     var cx = $("#heartbeat").width() / 2;
