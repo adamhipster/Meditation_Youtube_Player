@@ -1,37 +1,61 @@
 <html>
 <head>
     {% load static %}
-    <script src="https://www.youtube.com/iframe_api"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.1.2/js.cookie.min.js"></script>
-    <script src="{% static 'countdowntimer.js' %}"></script>
-    <script src="{% static 'meditation_player.js' %}"></script>
-    <script   src="https://code.jquery.com/jquery-3.1.0.min.js"   integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="   crossorigin="anonymous"></script>
-
     <link rel="stylesheet" type="text/css" href="{% static 'meditation_player.css' %}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.3/css/bootstrap.min.css" integrity="sha384-MIwDKRSSImVFAZCVLtU0LMDdON6KVCrZHyVQQj6e8wIEJkW4tvwqXrbMIya1vriY" crossorigin="anonymous">
 
 </head>
 <body>
-    <button id="countdown_button">Start Count Down</button>
-    <button id="favorites_button" onclick="toggleDisplay('#favorites_button', '#favorites_text')">Display list of favorite songs</button>
-    <button id="enable_camera_button" onclick="toggleIframe('#enable_camera_button')">Display heartmeter</button>
+    <button type="button" id="countdown_button" class="btn btn-secondary">Start Count Down</button>
     <div>Meditation stops in <span id="time">60:00</span> minutes.
+    </div> 
+    <br />
+    <h3>Youtube Player and other connected apps</h3>
+    <br />
+    <div id="video_placeholder"></div>
+    <br /> <br />
+    <h3>Control Panel</h3>
+    <div class="btn-group" data-toggle="buttons">
+      <label class="btn btn-primary active settings">
+        <input type="radio" name="options" id="option1" autocomplete="off" checked> Use only now
+      </label>
+      <label class="btn btn-primary settings">
+        <input type="radio" name="options" id="option2" autocomplete="off"> Use now and store as preset
+      </label>
     </div>
 
     <br />
-    <strong>Control Panel</strong>
-    <br />
-    <input type="text" id="vid1" value="beginning_video" />
-    <input type="text" id="vid2" value="end_video" />
-    <button id="video_ids" onclick="submitVideoIds(document.getElementById('vid1').value, document.getElementById('vid2').value)">submit youtube links</button>
-    <br />
-    <input type="text" id="meditation_time" value="3600"> <emph>enter time in seconds.</emph>
-    <button id="video_times" onclick="changeCountDownTime(document.getElementById('meditation_time').value)">submit time</button>
-
-    <br />
-    <div id="video_placeholder"></div>
     <br />
 
+    <button type="button" id="enable_camera_button" class="btn btn-secondary settings" onclick="toggleIframe('#enable_camera_button')">Display heartmeter</button>
+    <button type="button" id="favorites_button" class="btn btn-secondary settings" onclick="toggleDisplay('#favorites_button', '#favorites_text')">Toggle list of favorite songs</button>
 
+    <br /> <br />
+
+   <div class="row"> 
+        <div class="col-md-4">
+            <input type="text" id="vid1" value="beginning_video" />
+            <input type="text" id="vid2" value="end_video" />
+        </div>
+        <div class="col-md-4">
+            <button type="button" id="video_ids_submit"  class="btn btn-secondary settings" onclick="submitVideoIds(document.getElementById('vid1').value, document.getElementById('vid2').value)">submit youtube links</button>
+        </div>
+    </div>
+
+    <br />
+
+    <div class="row">
+        <div class="col-md-4">
+            <input type="text" id="meditation_time" value="3600"> 
+        </div>
+        <div class="col-md-4">
+            <button type="button" id="video_times_submit"  class="btn btn-secondary settings" onclick="changeCountDownTime(document.getElementById('meditation_time').value)">submit time (in seconds)</button>
+        </div>
+    </div>
+
+    <br /> <br /> <br />
+
+    <br />
     <div id="favorites_text" style="display:none">
         Defaults:
         <ul>
@@ -62,8 +86,21 @@
             <li>CrwHNSkzT3U -- Said The Sky - Book Of Us (ft. Mothica)</li>
             <li>https://www.youtube.com/watch?v=JpdrO1ZY0QA -- Mendum feat. EDEN - Elysium (Miro Remix) "Leeet it buuuurn"</li>
             <li>https://www.youtube.com/watch?v=vKKERJpFuvo -- Frozen Tides by Electus & Michael St Laurent (heerlijke piano die ik voorspelde)</li>
+		<li>https://www.youtube.com/watch?v=gM1perG-y_I&spfreload=5 -- Ember Island - Need You (kazlo Remix), damnnn deze is spaaaaaceee!! :) </li>
         </ul>
         <p>Try: Vqrj0Lr81WQ, GA9a2lrhdl0, 2Y4ETdepLjw</p>
     </div>
+
+    
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.0.0/jquery.min.js" integrity="sha384-THPy051/pYDQGanwU6poAc/hOdQxjnOEXzbT+OuUAFqNqFjL+4IGLBgCJC3ZOShY" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.2.0/js/tether.min.js" integrity="sha384-Plbmg8JY28KFelvJVai01l8WyZzrYWG825m+cZ0eDDS1f7d/js6ikvy1+X+guPIB" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.3/js/bootstrap.min.js" integrity="sha384-ux8v3A6CPtOTqOzMKiuo3d/DomGaaClxFYdCu2HPMBEkf6x2xiDyJ7gkXU0MWwaD" crossorigin="anonymous"></script>
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.1.2/js.cookie.min.js"></script>
+    <script src="{% static 'countdowntimer.js' %}"></script>
+    <script src="{% static 'meditation_player.js' %}"></script>
+    <script src="{% static 'meditation_settings.js' %}"></script>
 </body>
 </html>

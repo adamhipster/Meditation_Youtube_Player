@@ -6,6 +6,8 @@ var start_counter = -1; //will be set at 0 when necessary things are initialized
 var unplayable_video;
 var is_hearttracking = false;
 
+
+
 //The youtube part from tutorial: http://tutorialzine.com/2015/08/how-to-control-youtubes-video-player-with-javascript/
 var player;
 function onYouTubeIframeAPIReady() {
@@ -154,7 +156,7 @@ function changeCountDownTime(time) {
         vid_times[0] = fromSecondsToFormattedTime(time);
         countdown_time = time;
         update_var = fromSecondsToFormattedTime(time);
-        update("updated_time", "video_times", update_var);
+        update("updated_time", 'video_times_submit', update_var);
         time_element = document.getElementById("time");
         time_element.innerHTML = update_var;
         console.log(vid_times);
@@ -221,7 +223,7 @@ function toggleDisplay(buttonSelector, textSelector) {
 }
 
 function toggleIframe(buttonSelector) {
-    function HeartrateEventListeners(){
+    function heartrateEventListeners(){
         var doc = document.getElementById(id).contentWindow.document;
         doc.getElementById("facetracking_agreement").addEventListener("click", function(){
             is_hearttracking = true;
@@ -233,19 +235,28 @@ function toggleIframe(buttonSelector) {
         });
 
     }
-    var wrapper= document.createElement('div');
-    wrapper.innerHTML= "<iframe id='camera_iframe' src='http://localhost:8000/pulse/begin'></iframe>";
-    var iframe = wrapper.firstChild;
-    var id = iframe.getAttribute("id");
-    var domIframe = document.getElementById(id); 
-    if(!domIframe){
-        var vidHolder = document.getElementById("video_placeholder");
-        var parentVid = vidHolder.parentNode;
-        var index = Array.prototype.indexOf.call(parentVid.children, vidHolder);
-        parentVid.insertBefore(iframe, parentVid.children[index+1]);
-        setTimeout(HeartrateEventListeners, 1000);
+    var bs = buttonSelector.slice(1);
+    var button = document.getElementById(bs);
+    var iframeId = "camera_iframe";
+    if (button.innerHTML == "Display heartmeter") {
+        document.getElementById(bs).innerHTML = "Hide heartmeter";
+        var wrapper= document.createElement('div');
+        wrapper.innerHTML= "<iframe id='" + iframeId +"' src='http://localhost:8000/pulse/begin'></iframe>";
+        var iframe = wrapper.firstChild;
+        var id = iframe.getAttribute("id");
+        var domIframe = document.getElementById(id); 
+        if(!domIframe){
+            var vidHolder = document.getElementById("video_placeholder");
+            var parentVid = vidHolder.parentNode;
+            var index = Array.prototype.indexOf.call(parentVid.children, vidHolder);
+            parentVid.insertBefore(iframe, parentVid.children[index+1]);
+            setTimeout(heartrateEventListeners, 1000);
+        }
     }
-    //document.getElementById("camera_iframe").contentWindow.document.getElementById("facetracking_agreement")
+    else {
+        document.getElementById(bs).innerHTML = "Display heartmeter";
+        document.getElementById(iframeId).parentNode.removeChild(document.getElementById(iframeId));
+    }
 }
 
 
@@ -264,6 +275,4 @@ function toggleIframe(buttonSelector) {
 //     }
 
 // }
-
-
 
