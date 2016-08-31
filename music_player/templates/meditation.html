@@ -1,20 +1,21 @@
 <html>
 <head>
     {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'meditation_player.css' %}">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.3/css/bootstrap.min.css" integrity="sha384-MIwDKRSSImVFAZCVLtU0LMDdON6KVCrZHyVQQj6e8wIEJkW4tvwqXrbMIya1vriY" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="{% static 'meditation_player.css' %}">
 
 </head>
-<body>
+<body data-context="{{context}}">
     <button type="button" id="countdown_button" class="btn btn-secondary">Start Count Down</button>
-    <div>Meditation stops in <span id="time">60:00</span> minutes.
+    <div>Meditation stops in <span id="time">an X amount of</span> minutes.
     </div> 
     <br />
-    <h3>Youtube Player and other connected apps</h3>
+    <h3>Youtube Player and Heart Detector</h3>
     <br />
     <div id="video_placeholder"></div>
     <br /> <br />
     <h3>Control Panel</h3>
+
     <div class="btn-group" data-toggle="buttons">
       <label class="btn btn-primary active settings">
         <input type="radio" name="options" id="option1" autocomplete="off" checked> Use only now
@@ -27,12 +28,35 @@
     <br />
     <br />
 
-    <button type="button" id="enable_camera_button" class="btn btn-secondary settings" onclick="toggleIframe('#enable_camera_button')">Display heartmeter</button>
-    <button type="button" id="favorites_button" class="btn btn-secondary settings" onclick="toggleDisplay('#favorites_button', '#favorites_text')">Toggle list of favorite songs</button>
+    <div class="row">
+        <div class="col-md-2">
+            <h5>Meditation time</h5>
+        </div>
+        <div class="col-md-4">
+            <input type="text" id="meditation_time" value="3600"> 
+        </div>
+        <div class="col-md-4">
+            <button type="button" id="video_times_submit"  class="btn btn-secondary settings" onclick="changeCountDownTime(document.getElementById('meditation_time').value)">submit time (in seconds)</button>
+        </div>
+    </div>
 
-    <br /> <br />
+    <br />
+
+    <div class="row">
+        <div class="col-md-2">
+            <h5>Heart Detector Settings</h5>
+        </div>
+        <div class="col-md-4">
+            <button type="button" id="enable_camera_button" class="btn btn-secondary settings" onclick="toggleIframe('#enable_camera_button')">Display heart detector</button>
+        </div>
+    </div>
+
+    <br />
 
    <div class="row"> 
+        <div class="col-md-2">
+            <h5>YouTube Settings</h5>
+        </div>
         <div class="col-md-4">
             <input type="text" id="vid1" value="beginning_video" />
             <input type="text" id="vid2" value="end_video" />
@@ -42,21 +66,17 @@
         </div>
     </div>
 
-    <br />
-
     <div class="row">
-        <div class="col-md-4">
-            <input type="text" id="meditation_time" value="3600"> 
-        </div>
-        <div class="col-md-4">
-            <button type="button" id="video_times_submit"  class="btn btn-secondary settings" onclick="changeCountDownTime(document.getElementById('meditation_time').value)">submit time (in seconds)</button>
+        <div class="col-md-4 offset-md-2">
+            <button type="button" id="favorites_button" class="btn btn-secondary settings" onclick="toggleDisplay('#favorites_button', '#favorites_text')">Toggle list of favorite songs</button>
         </div>
     </div>
-
-    <br /> <br /> <br />
+   
+    <br /> 
 
     <br />
-    <div id="favorites_text" style="display:none">
+
+    <div id="favorites_text">
         Defaults:
         <ul>
             <li>YQlyHbu0zz4 --  Antoine Dufour - These Moments</li> 

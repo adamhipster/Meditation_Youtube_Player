@@ -1,12 +1,18 @@
+//INIT CONTEXT
+var c = JSON.parse(document.getElementsByTagName('body')[0].getAttribute('data-context'));
+var ids = [c.vid1, c.vid2];
+var countdown_time = c.countdown_time;
+document.getElementById('meditation_time').setAttribute('value', countdown_time);
+var cdt_formatted = fromSecondsToFormattedTime(countdown_time);
+document.getElementById('time').innerText = cdt_formatted;
+document.getElementById('favorites_text').style.display = c.display_favorites_text == false ? 'none' : '';
+if(c.display_heart_detector == true ) toggleIframe('#enable_camera_button');
+
 //standard video settings.
-var ids = ["YQlyHbu0zz4", "QoitiIbdeaM"];
-var vid_times = ["60:00", "10:00"]; //10:00 is placeholder.
-var countdown_time = 3600;
+var vid_times = [cdt_formatted, "10:00"]; //10:00 is placeholder.
 var start_counter = -1; //will be set at 0 when necessary things are initialized
 var unplayable_video;
 var is_hearttracking = false;
-
-
 
 //The youtube part from tutorial: http://tutorialzine.com/2015/08/how-to-control-youtubes-video-player-with-javascript/
 var player;
@@ -82,6 +88,7 @@ function fromSecondsToFormattedTime(time) {
 
 //Timer part from: http://stackoverflow.com/questions/20618355/the-simplest-possible-javascript-countdown-timer
 window.onload = function () {
+    
     $.ajaxSetup({
         beforeSend: function(xhr, settings) {
             if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
@@ -89,7 +96,7 @@ window.onload = function () {
                 xhr.setRequestHeader("X-CSRFToken", Cookies.get('csrftoken'));
             }
         }
-    });
+    });    
     var display = document.querySelector('#time');
     document.querySelector('#countdown_button').addEventListener('click', function () { 
         if(start_counter == 0){
@@ -204,7 +211,7 @@ function toggleDisplay(buttonSelector, textSelector) {
             text.style.display = 'none';
         }
         else {
-            text.style.display = 'block';
+            text.style.display = '';
         }
         return text;
     }
@@ -223,23 +230,24 @@ function toggleDisplay(buttonSelector, textSelector) {
 }
 
 function toggleIframe(buttonSelector) {
+    function evListenerAgree(){
+        is_hearttracking = true;
+        console.log("click facetracking_agreement! Heartracking is " + is_hearttracking);
+    }
+    function evListenerReset(){
+        is_hearttracking = false;
+        console.log("click end_camera! Heartracking is " + is_hearttracking);
+    }
     function heartrateEventListeners(){
         var doc = document.getElementById(id).contentWindow.document;
-        doc.getElementById("facetracking_agreement").addEventListener("click", function(){
-            is_hearttracking = true;
-            console.log("click facetracking_agreement! Heartracking is " + is_hearttracking);
-        });
-        doc.getElementById("end_camera").addEventListener("click", function(){
-            is_hearttracking = false;
-            console.log("click end_camera! Heartracking is " + is_hearttracking);
-        });
-
+        doc.getElementById("facetracking_agreement").addEventListener("click", evListenerAgree);
+        doc.getElementById("end_camera").addEventListener("click", evListenerReset);
     }
     var bs = buttonSelector.slice(1);
     var button = document.getElementById(bs);
     var iframeId = "camera_iframe";
-    if (button.innerHTML == "Display heartmeter") {
-        document.getElementById(bs).innerHTML = "Hide heartmeter";
+    if (button.innerHTML == "Display heart detector") {
+        document.getElementById(bs).innerHTML = "Hide heart detector";
         var wrapper= document.createElement('div');
         wrapper.innerHTML= "<iframe id='" + iframeId +"' src='http://localhost:8000/pulse/begin'></iframe>";
         var iframe = wrapper.firstChild;
@@ -254,9 +262,12 @@ function toggleIframe(buttonSelector) {
         }
     }
     else {
-        document.getElementById(bs).innerHTML = "Display heartmeter";
+        document.getElementById(bs).innerHTML = "Display heart detector";
         document.getElementById(iframeId).parentNode.removeChild(document.getElementById(iframeId));
+        document.removeEventListener("click", evListenerAgree);
+        document.removeEventListener("click", evListenerReset);
     }
+    console.log(buttonSelector);
 }
 
 

@@ -1,10 +1,11 @@
+//GLOBAL VARS
+var hasToChangeSettings = false;
 
 //FUNCTIONS FOR SETTINGS
 $(document).on('click', '.settings', processSettings);
 
 function processSettings(event){
     var element = event.target;
-    var hasToChangeSettings = false;
     if(element.nodeName == "LABEL"){
         hasToChangeSettings = (element.children[0].id == 'option2')? true : false;
     }
@@ -15,7 +16,7 @@ function processSettings(event){
                     processFavoritesButton();
                 break;
                 case 'enable_camera_button':
-                    processEnableCameraButton();
+                    processEnableCameraButton(element);
                 break;
                 case 'video_ids_submit':
                     processVideoIdsSubmit();
@@ -33,30 +34,51 @@ function uploadToDatabase(data) {
     ({
         "type": "POST",
         "dataType": "json",
-        "url": "/",
+        "url": "meditation_settings/",
         "data": data,
     }); 
+    console.log("Upload to database!");
+    console.log(data);
 }
+
 function processFavoritesButton() {
     var el = document.getElementById('favorites_text');
     if(el.style.display == 'none'){
-        uploadToDatabase('favorites_text': false);
+        uploadToDatabase({'display_favorites_text': false});
     }
     else{
-        uploadToDatabase('favorites_text': true);
+        uploadToDatabase({'display_favorites_text': true});
     }
 }
 
-function processEnableCameraButton() {
-    //need to think about this
+function processEnableCameraButton(button) {
+    var el = document.getElementById('camera_iframe');
+    if (el) {
+        uploadToDatabase({'display_heart_detector': true});
+    }
+    else {
+        uploadToDatabase({'display_heart_detector': false});
+    }
 }
 
 function processVideoIdsSubmit() {
-    var vid1, vid2 = document.getElementById('vid1').value, document.getElementById('vid2').value);
+    var vid1 = ifURLExtractId(document.getElementById('vid1').value);
+    var vid2 = ifURLExtractId(document.getElementById('vid2').value);
+    uploadToDatabase({'vid1' : vid1, 'vid2' : vid2});
+}
+
+function ifURLExtractId(vid) {
+    if(vid.indexOf("youtube") > -1){
+        var pos = vid.indexOf("v=");
+        id = vid.slice(pos+2, vid.indexOf("&"));
+        vid = id;
+    }
+    return vid;
 }
 
 function processVideoTimesSubmit() {
     var countdownTime = document.getElementById('meditation_time').value;
+    uploadToDatabase({'countdown_time' : countdownTime});
 }
 
 

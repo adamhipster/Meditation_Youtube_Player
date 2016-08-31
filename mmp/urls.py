@@ -21,6 +21,7 @@ from pulse import views as pulse_views
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', music_player_views.meditation, name='meditation'),
+    url(r'^meditation_settings/$', music_player_views.meditation_settings, name='meditation_settings'),
 
     #URLs for pulse app
     url(r'^pulse/$', pulse_views.pulse, name='pulse'),
